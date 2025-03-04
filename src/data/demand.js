@@ -1,6 +1,6 @@
 export const demand = {
   type: "FeatureCollection",
-  name: "test4",
+  name: "Demand Points",
   crs: { type: "name", properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" } },
   features: [
     {
