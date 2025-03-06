@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_DEV_API;
+const BASE_URL = import.meta.env.VITE_PROD_API ?? import.meta.env.VITE_DEV_API;
 
 export async function postSimulate(payload) {
   try {
