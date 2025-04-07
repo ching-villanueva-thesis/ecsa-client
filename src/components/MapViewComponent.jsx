@@ -17,53 +17,19 @@ const MapViewComponent = () => {
 
   const [mapView, setMapView] = useState(null);
   const mapRef = useRef(null);
+  const graphicsLayerRef = useRef(null);
+
+  const [showDCS, setShowDCS] = useState(true);
+  const [showDECSA, setShowDECSA] = useState(true);
 
   useEffect(() => {
     if (!mapRef?.current) return;
 
     const layers = [];
 
-    // TODO: Create a util function for this
-    // const graphicsLayer = new GraphicsLayer();
-    // const polyline = new Polyline({
-    //   paths: [
-    //     [120.972179364066918, 14.592769365015331],
-    //     [120.972904589586477, 14.592777563969046],
-    //   ],
-    // });
-    // const polylineGraphic = new Graphic({
-    //   geometry: polyline,
-    //   symbol: {
-    //     type: "simple-line",
-    //     color: [226, 119, 40],
-    //     width: 3,
-    //   },
-    // });
-    // graphicsLayer.add(polylineGraphic);
-    // layers.push(graphicsLayer);
-
-    if (simulationResult) {
-      const { result } = simulationResult ?? {};
-
-      const graphicsLayer = new GraphicsLayer();
-
-      const polylineGraphics = result
-        .map((coordinates) => new Polyline({ paths: coordinates }))
-        .map(
-          (polyline) =>
-            new Graphic({
-              geometry: polyline,
-              symbol: {
-                type: "simple-line",
-                color: [226, 119, 40],
-                width: 1,
-              },
-            })
-        );
-
-      graphicsLayer.addMany(polylineGraphics);
-      layers.push(graphicsLayer);
-    }
+    const graphicsLayer = new GraphicsLayer();
+    graphicsLayerRef.current = graphicsLayer;
+    layers.push(graphicsLayer);
 
     if (demandGeoJson) {
       layers.push(
@@ -76,6 +42,9 @@ const MapViewComponent = () => {
               color: "red",
               size: 4,
             },
+          },
+          popupTemplate: {
+            title: "{id}",
           },
         })
       );
@@ -92,6 +61,9 @@ const MapViewComponent = () => {
               color: "green",
               size: 8,
             },
+          },
+          popupTemplate: {
+            title: "{id}",
           },
         })
       );
@@ -112,6 +84,51 @@ const MapViewComponent = () => {
     setMapView(view);
   }, [demandGeoJson, spacesGeoJson, simulationResult]);
 
+  useEffect(() => {
+    if (simulationResult) {
+      const graphicsLayer = graphicsLayerRef.current;
+      if (!graphicsLayer || !simulationResult) return;
+
+      graphicsLayer.removeAll();
+
+      const { dcsResult, decsaResult } = simulationResult ?? {};
+
+      if (showDCS && dcsResult) {
+        const dcsPolylineGraphics = dcsResult
+          .map((coordinates) => new Polyline({ paths: coordinates }))
+          .map(
+            (polyline) =>
+              new Graphic({
+                geometry: polyline,
+                symbol: {
+                  type: "simple-line",
+                  color: [0, 0, 255],
+                  width: 1,
+                },
+              })
+          );
+        graphicsLayer.addMany(dcsPolylineGraphics);
+      }
+
+      if (showDECSA && decsaResult) {
+        const decsaPolylineGraphics = decsaResult
+          .map((coordinates) => new Polyline({ paths: coordinates }))
+          .map(
+            (polyline) =>
+              new Graphic({
+                geometry: polyline,
+                symbol: {
+                  type: "simple-line",
+                  color: [226, 119, 40],
+                  width: 1,
+                },
+              })
+          );
+        graphicsLayer.addMany(decsaPolylineGraphics);
+      }
+    }
+  }, [simulationResult, showDCS, showDECSA]);
+
   return (
     <section className="relative">
       <div className="w-full h-[60dvh] shadow-md" ref={mapRef}></div>
@@ -128,6 +145,38 @@ const MapViewComponent = () => {
           />
         </div>
       )}
+
+      <div className="absolute top-4 right-4 bg-white rounded-2xl shadow-lg p-4 z-10 space-y-3 border border-gray-200">
+        <h4 className="text-base font-semibold text-gray-700">
+          Show Allocations
+        </h4>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="dcs-toggle"
+            checked={showDCS || !simulationResult}
+            onChange={() => setShowDCS((prev) => !prev)}
+            disabled={isLoading}
+            className="accent-blue-600"
+          />
+          <label htmlFor="dcs-toggle" className="text-sm text-blue-700">
+            DCS
+          </label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="decsa-toggle"
+            checked={showDECSA || !simulationResult}
+            onChange={() => setShowDECSA((prev) => !prev)}
+            disabled={isLoading}
+            className="accent-orange-600"
+          />
+          <label htmlFor="decsa-toggle" className="text-sm text-orange-700">
+            DECSA
+          </label>
+        </div>
+      </div>
     </section>
   );
 };

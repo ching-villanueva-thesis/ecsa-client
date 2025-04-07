@@ -15,7 +15,7 @@ const SimulatorForm = () => {
     isLoading,
   } = useContext(AppContext);
 
-  const [maxIterations, setMaxIterations] = useState(500);
+  const [maxIterations, setMaxIterations] = useState(100);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -108,7 +108,6 @@ const SimulatorForm = () => {
 
   return (
     <form onSubmit={onSubmit} encType="multipart/form-data">
-      <h3 className="text-sm">Enhanced Cuckoo Search Algorithm</h3>
       <section className="flex flex-col gap-2 p-2">
         <section>
           <label className="font-bold text-sm" htmlFor="maxGen">

@@ -3,30 +3,23 @@ import AppContext from "../context/AppContext";
 import { Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { MutatingDots } from "react-loader-spinner";
 import Metrics from "./Metrics";
+import makeBlobUrl, { makeBlobImageUrl } from "../util/blob";
 
 const Visualization = () => {
   const { simulationResult, isLoading } = useContext(AppContext);
   const [lineChartData, setLineChartData] = useState(null);
   const [interval, setInterval] = useState(0);
 
-  useEffect(() => {
-    if (simulationResult) {
-      const { metrics } = simulationResult;
-      const { convergence } = metrics;
-      const data = convergence.map((val, i) => ({
-        iteration: i,
-        fmin: val,
-      }));
+  // useEffect(() => {
+  //   if (simulationResult) {
 
-      setInterval((convergence.length - 1) / 10);
-      setLineChartData(data);
-    }
-  }, [simulationResult]);
+  //   }
+  // }, [simulationResult]);
 
   return (
     <section className="flex flex-col">
       <section className="flex">
-        <section className="flex flex-col w-full mt-2">
+        {/* <section className="flex flex-col w-full mt-2">
           {!isLoading && (
             <h3 className="font-bold text-l mb-2">Convergence Graph</h3>
           )}
@@ -58,22 +51,8 @@ const Visualization = () => {
               />
             </LineChart>
           )}
-
-          {isLoading && (
-            <MutatingDots
-              visible={true}
-              height="100"
-              width="100"
-              color="rgb(2 132 199)"
-              secondaryColor="rgb(2 132 199)"
-              radius="8"
-              ariaLabel="mutating-dots-loading"
-            />
-          )}
-        </section>
-        {simulationResult && !isLoading && (
-          <Metrics simulationResult={simulationResult} />
-        )}
+        </section> */}
+        {simulationResult && <Metrics simulationResult={simulationResult} />}
       </section>
     </section>
   );
